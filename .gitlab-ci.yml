@@ -1,0 +1,29 @@
+image: "ubuntu:bionic"
+
+# variables:
+#   VARIABLE_X: abc
+#   VARIABLE_Y: def
+
+stages:
+  - compile
+  - publish
+
+compile:
+  stage: compile
+  before_script:
+    - add-apt-repository -y ppa:maxmind/ppa
+    - apt update && apt -y upgrade
+    - apt -y install curl tar unzip git dpkg-dev build-essential zlib1g zlib1g-dev libpcre3 libpcre3-dev
+    - apt -y install dh-systemd diffstat quilt tree perl libperl-dev libgd3 libgd-dev libssl-dev ca-certificates
+    - apt -y install autoconf automake libtool uuid-dev lsb-release libgeoip1 libgeoip-dev geoip-bin libxml2
+    - apt -y install libxml2-dev libxslt1.1 libxslt1-dev xutils-dev checkinstall libtemplate-perl libatomic-ops-dev
+  script:
+    - sudo ./build.sh
+  # artifacts:
+  #   paths:
+  #     - node_modules/
+
+publish:
+  stage: publish
+  script:
+    - echo "todo = publish to PPA repo"
