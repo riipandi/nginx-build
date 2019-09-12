@@ -19,6 +19,7 @@ compile:
     - apt -y install libxml2-dev libxslt1.1 libxslt1-dev xutils-dev checkinstall libtemplate-perl libatomic-ops-dev
   script:
     - sudo ./build.sh
+    - echo && nginx -v && nginx -V
     - echo "todo = publish to PPA repo"
   # artifacts:
   #   paths:
