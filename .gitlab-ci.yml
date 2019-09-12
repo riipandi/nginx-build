@@ -16,6 +16,7 @@ compile:
   script:
     - sudo make dep
     - sudo ./build.sh
+  after_script:
     - echo && nginx -v && nginx -V
     - echo "todo = publish to PPA repo"
   artifacts:
