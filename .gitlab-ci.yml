@@ -11,7 +11,8 @@ stages:
 compile:
   stage: compile
   before_script:
-    - apt update && apt -y install sudo
+    - apt update
+    - apt -y install sudo software-properties-common automake build-essential
   script:
     - sudo make dep
     - sudo ./build.sh
