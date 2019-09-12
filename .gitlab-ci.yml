@@ -11,6 +11,7 @@ stages:
 compile:
   stage: compile
   before_script:
+    - apt update && apt -y install sudo
     - sudo make dep
   script:
     - sudo ./build.sh
