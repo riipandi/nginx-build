@@ -12,8 +12,8 @@ compile:
   stage: compile
   before_script:
     - apt update && apt -y install sudo
-    - sudo make dep
   script:
+    - sudo make dep
     - sudo ./build.sh
     - echo && nginx -v && nginx -V
     - echo "todo = publish to PPA repo"
