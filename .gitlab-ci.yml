@@ -11,7 +11,7 @@ stages:
 compile:
   stage: compile
   before_script:
-    - apt update && apt -y install software-properties-common
+    - apt update && apt -y install sudo software-properties-common
     - add-apt-repository -y ppa:maxmind/ppa && apt -y full-upgrade
     - apt -y install curl tar unzip git dpkg-dev build-essential zlib1g zlib1g-dev libpcre3 libpcre3-dev
     - apt -y install dh-systemd diffstat quilt tree perl libperl-dev libgd3 libgd-dev libssl-dev ca-certificates
