@@ -11,19 +11,14 @@ stages:
 compile:
   stage: compile
   before_script:
-    - apt update && apt -y install sudo software-properties-common
-    - add-apt-repository -y ppa:maxmind/ppa && apt -y full-upgrade
-    - apt -y install curl tar unzip git dpkg-dev build-essential zlib1g zlib1g-dev libpcre3 libpcre3-dev
-    - apt -y install dh-systemd diffstat quilt tree perl libperl-dev libgd3 libgd-dev libssl-dev ca-certificates
-    - apt -y install autoconf automake libtool uuid-dev lsb-release libgeoip1 libgeoip-dev geoip-bin libxml2
-    - apt -y install libxml2-dev libxslt1.1 libxslt1-dev xutils-dev checkinstall libtemplate-perl libatomic-ops-dev
+    - sudo make dep
   script:
     - sudo ./build.sh
     - echo && nginx -v && nginx -V
     - echo "todo = publish to PPA repo"
-  # artifacts:
-  #   paths:
-  #     - node_modules/
+  artifacts:
+    paths:
+      - packages/
 
 # publish:
 #   stage: publish

@@ -3,50 +3,45 @@ if [[ $EUID -ne 0 ]]; then echo 'You must be root!' ; exit 1 ; fi
 
 # Version variables
 # --------------------------------------------------------------------------------------------------------
-# CURRENT_BASEDIR=$(dirname "$(readlink -f "$0")")
-CURRENT_BASEDIR=$(pwd)
+PWD=$(pwd)
 
 PERL_VERSION="5.26.1"
 PCRE_VERSION="8.43"
 ZLIB_VERSION="1.2.11"
 OPENSSL_VERSION="1.1.1d"
+MAXMIND_VERSION=$(echo `curl -s "https://api.github.com/repos/maxmind/libmaxminddb/releases/latest" | jq -r '.tag_name'` | cut -d '-' -f 2)
 
+NGX_VERSION=$(echo `curl -s "https://api.github.com/repos/nginx/nginx/tags" | jq -r '.[0].name'` | cut -d '-' -f 2)
 NGX_FANCYINDEX="0.4.3"
 NGX_USER="www-data"
 NGX_GROUP="www-data"
 
-# Build dependencies
-# --------------------------------------------------------------------------------------------------------
-add-apt-repository -y ppa:maxmind/ppa && apt update && apt -y upgrade
-apt -y install curl tar unzip git dpkg-dev build-essential zlib1g zlib1g-dev libpcre3 libpcre3-dev \
-dh-systemd diffstat quilt tree perl libperl-dev libgd3 libgd-dev libssl-dev ca-certificates \
-autoconf automake libtool uuid-dev lsb-release libgeoip1 libgeoip-dev geoip-bin libxml2 \
-libxml2-dev libxslt1.1 libxslt1-dev xutils-dev checkinstall libtemplate-perl libatomic-ops-dev
+[[ ! -d $PWD/packages ]] && mkdir -p $PWD/packages
 
 # nginx dependencies
 # https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/
 # --------------------------------------------------------------------------------------------------------
 
 # Perl
-[[ ! -d /usr/src/perl-${PERL_VERSION} ]] || rm -fr /usr/src/perl-${PERL_VERSION}
-curl -fsSL http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-# cd /usr/src/perl-${PERL_VERSION} && ./Configure -des -Dprefix=/usr -Dusethreads
+[[ ! -d $PWD/packages/perl-${PERL_VERSION} ]] || rm -fr $PWD/packages/perl-${PERL_VERSION}
+curl -fsSL http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+# cd $PWD/packages/perl-${PERL_VERSION} && ./Configure -des -Dprefix=/usr -Dusethreads
 # make && make test && make install
 
 # PCRE
-[[ ! -d /usr/src/pcre-${PCRE_VERSION} ]] || rm -fr /usr/src/pcre-${PCRE_VERSION}
-curl -fsSL https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/pcre-${PCRE_VERSION} && ./configure && make && make install
+[[ ! -d $PWD/packages/pcre-${PCRE_VERSION} ]] || rm -fr $PWD/packages/pcre-${PCRE_VERSION}
+curl -fsSL https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/pcre-${PCRE_VERSION} && ./configure && make && make install
 
 # zlib
-[[ ! -d /usr/src/zlib-${ZLIB_VERSION} ]] || rm -fr /usr/src/zlib-${ZLIB_VERSION}
-curl -fsSL http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/zlib-${ZLIB_VERSION} && ./configure && make && make install
+[[ ! -d $PWD/packages/zlib-${ZLIB_VERSION} ]] || rm -fr $PWD/packages/zlib-${ZLIB_VERSION}
+curl -fsSL http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/zlib-${ZLIB_VERSION} && ./configure && make && make install
 
 # OpenSSL
-[[ ! -d /usr/src/openssl-${OPENSSL_VERSION} ]] || rm -fr /usr/src/openssl-${OPENSSL_VERSION}
-curl -fsSL https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/openssl-${OPENSSL_VERSION} && ./Configure linux-x86_64 --prefix=/usr --openssldir=/usr/lib/ssl shared
+[[ ! -d $PWD/packages/openssl-${OPENSSL_VERSION} ]] || rm -fr $PWD/packages/openssl-${OPENSSL_VERSION}
+curl -fsSL https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/openssl-${OPENSSL_VERSION} && ./Configure linux-x86_64 --prefix=/usr --openssldir=/usr/lib/ssl shared
 make && make install && echo '/usr/lib' > /etc/ld.so.conf.d/openssl.conf && sudo ldconfig
 openssl version -a
 
@@ -54,44 +49,39 @@ openssl version -a
 # --------------------------------------------------------------------------------------------------------
 
 # libmaxminddb
-MAXMIND_RELEASE=$(curl -s "https://api.github.com/repos/maxmind/libmaxminddb/releases/latest" | jq -r '.tag_name')
-MAXMIND_VERSION=$(echo ${MAXMIND_RELEASE} | cut -d '-' -f 2)
-[[ ! -d /usr/src/libmaxminddb-${MAXMIND_VERSION} ]] || rm -fr /usr/src/libmaxminddb-${MAXMIND_VERSION}
-curl -fsSL https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/libmaxminddb-${MAXMIND_VERSION} && ./configure && make && make check && make install && ldconfig
+[[ ! -d $PWD/packages/libmaxminddb-${MAXMIND_VERSION} ]] || rm -fr $PWD/packages/libmaxminddb-${MAXMIND_VERSION}
+curl -fsSL https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/libmaxminddb-${MAXMIND_VERSION} && ./configure && make && make check && make install && ldconfig
 
 # Brotli
-[[ ! -d /usr/src/ngx_brotli ]] || rm -fr /usr/src/ngx_brotli
-git clone https://github.com/google/ngx_brotli.git /usr/src/ngx_brotli
-cd /usr/src/ngx_brotli && git submodule update --init
+[[ ! -d $PWD/packages/ngx_brotli ]] || rm -fr $PWD/packages/ngx_brotli
+git clone https://github.com/google/ngx_brotli.git $PWD/packages/ngx_brotli
+cd $PWD/packages/ngx_brotli && git submodule update --init
 
 # FancyIndex
-[[ ! -d /usr/src/ngx-fancyindex-${NGX_FANCYINDEX} ]] || rm -fr /usr/src/ngx-fancyindex-${NGX_FANCYINDEX}
-curl -fsSL https://github.com/aperezdc/ngx-fancyindex/archive/v{$NGX_FANCYINDEX}.tar.gz | tar -zxvf- -C /usr/src
+[[ ! -d $PWD/packages/ngx-fancyindex-${NGX_FANCYINDEX} ]] || rm -fr $PWD/packages/ngx-fancyindex-${NGX_FANCYINDEX}
+curl -fsSL https://github.com/aperezdc/ngx-fancyindex/archive/v{$NGX_FANCYINDEX}.tar.gz | tar -zxvf- -C $PWD/packages
 
 # Nginx RTMP
 # ngx_rtmp_release=$(curl -s "https://api.github.com/repos/sergey-dryabzhinsky/nginx-rtmp-module/tags" | jq -r '.[0].name')
 # ngx_rtmp_version=$(echo ${ngx_rtmp_release} | cut -d 'v' -f 2)
-# curl -fsSL https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/${ngx_rtmp_release}.tar.gz | tar -zxvf- -C /usr/src
+# curl -fsSL https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/${ngx_rtmp_release}.tar.gz | tar -zxvf- -C $PWD/packages
 
 # PageSpeed
 MODPAGESPEED_RELEASE=$(curl -s "https://api.github.com/repos/apache/incubator-pagespeed-ngx/tags" | jq -r '.[0].name')
 MODPAGESPEED_VERSION=$(echo ${MODPAGESPEED_RELEASE} | cut -d 'v' -f 2)
 PSOL_RELEASE_NUMBER=${MODPAGESPEED_VERSION/stable/}
 
-[[ ! -d /usr/src/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION} ]] || rm -fr /usr/src/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
-curl -fsSL https://github.com/apache/incubator-pagespeed-ngx/archive/${MODPAGESPEED_RELEASE}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
+[[ ! -d $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION} ]] || rm -fr $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
+curl -fsSL https://github.com/apache/incubator-pagespeed-ngx/archive/${MODPAGESPEED_RELEASE}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
 curl -fsSL https://dl.google.com/dl/page-speed/psol/${PSOL_RELEASE_NUMBER}x$(uname -p | cut -d '_' -f 2).tar.gz | tar -zxvf-
 
 # Download nginx source
 # --------------------------------------------------------------------------------------------------------
-NGX_RELEASE=$(curl -s "https://api.github.com/repos/nginx/nginx/tags" | jq -r '.[0].name')
-NGX_VERSION=$(echo ${NGX_RELEASE} | cut -d '-' -f 2)
-
-[[ ! -d /usr/src/nginx-${NGX_VERSION} ]] || rm -fr /usr/src/nginx-${NGX_VERSION}
-curl -fsSL http://nginx.org/download/nginx-${NGX_VERSION}.tar.gz | tar -zxvf- -C /usr/src
-cd /usr/src/nginx-${NGX_VERSION}
+[[ ! -d $PWD/packages/nginx-${NGX_VERSION} ]] || rm -fr $PWD/packages/nginx-${NGX_VERSION}
+curl -fsSL http://nginx.org/download/nginx-${NGX_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
+cd $PWD/packages/nginx-${NGX_VERSION}
 
 # Customize Nginx
 # --------------------------------------------------------------------------------------------------------
@@ -112,10 +102,10 @@ cd /usr/src/nginx-${NGX_VERSION}
 # sed -i "s/nginx/servant/" html/50x.html
 # ==========================================================================================
 
-rm -fr /usr/src/nginx-${NGX_VERSION}/conf/*
-rm -fr /usr/src/nginx-${NGX_VERSION}/html/*
-cp -r $CURRENT_BASEDIR/stubs/conf/* /usr/src/nginx-${NGX_VERSION}/conf/.
-cp -r $CURRENT_BASEDIR/stubs/html/* /usr/src/nginx-${NGX_VERSION}/html/.
+rm -fr $PWD/packages/nginx-${NGX_VERSION}/conf/*
+rm -fr $PWD/packages/nginx-${NGX_VERSION}/html/*
+cp -r $PWD/stubs/conf/* $PWD/packages/nginx-${NGX_VERSION}/conf/.
+cp -r $PWD/stubs/html/* $PWD/packages/nginx-${NGX_VERSION}/html/.
 
 # Compile Nginx
 # groupadd -g 3000 webmaster && useradd -u 3000 -s /usr/sbin/nologin -d /bin/null -g webmaster webmaster
@@ -160,14 +150,14 @@ NO_WARNING_CHECKS=yes ./configure \
     --with-http_sub_module \
     --with-http_v2_module \
     --with-http_xslt_module=dynamic \
-    --with-openssl=/usr/src/openssl-${OPENSSL_VERSION} \
+    --with-openssl=$PWD/packages/openssl-${OPENSSL_VERSION} \
     --with-openssl-opt=enable-ec_nistp_64_gcc_128 \
     --with-openssl-opt=no-nextprotoneg \
     --with-openssl-opt=no-ssl3 \
     --with-openssl-opt=no-weak-ssl-ciphers \
     --with-pcre-jit \
-    --with-pcre=/usr/src/pcre-${PCRE_VERSION} \
-    --with-perl_modules_path=/usr/src/perl-${PERL_VERSION} \
+    --with-pcre=$PWD/packages/pcre-${PCRE_VERSION} \
+    --with-perl_modules_path=$PWD/packages/perl-${PERL_VERSION} \
     --with-perl=/usr/bin/perl \
     --with-poll_module \
     --with-select_module \
@@ -177,11 +167,11 @@ NO_WARNING_CHECKS=yes ./configure \
     --with-stream_ssl_preread_module \
     --with-stream=dynamic \
     --with-threads \
-    --with-zlib=/usr/src/zlib-${ZLIB_VERSION} \
-    --add-module=/usr/src/ngx-fancyindex-${NGX_FANCYINDEX} \
-    --add-dynamic-module=/usr/src/ngx_brotli \
-    --add-dynamic-module=/usr/src/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
-    # --add-dynamic-module=/usr/src/nginx-rtmp-module-${ngx_rtmp_version}
+    --with-zlib=$PWD/packages/zlib-${ZLIB_VERSION} \
+    --add-module=$PWD/packages/ngx-fancyindex-${NGX_FANCYINDEX} \
+    --add-dynamic-module=$PWD/packages/ngx_brotli \
+    --add-dynamic-module=$PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
+    # --add-dynamic-module=$PWD/packages/nginx-rtmp-module-${ngx_rtmp_version}
 
 make && make install && mkdir -p /var/cache/nginx
 
