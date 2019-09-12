@@ -6,7 +6,7 @@ image: "ubuntu:bionic"
 
 stages:
   - compile
-  - publish
+  # - publish
 
 compile:
   stage: compile
@@ -19,11 +19,12 @@ compile:
     - apt -y install libxml2-dev libxslt1.1 libxslt1-dev xutils-dev checkinstall libtemplate-perl libatomic-ops-dev
   script:
     - sudo ./build.sh
+    - echo "todo = publish to PPA repo"
   # artifacts:
   #   paths:
   #     - node_modules/
 
-publish:
-  stage: publish
-  script:
-    - echo "todo = publish to PPA repo"
+# publish:
+#   stage: publish
+#   script:
+#     - echo "todo = publish to PPA repo"
