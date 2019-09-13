@@ -1,4 +1,4 @@
-include ../version.mk
+include ../packaging.mk
 
 # Package name
 PKG_NAME=nginx

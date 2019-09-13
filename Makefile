@@ -1,4 +1,4 @@
-include ./version.mk
+include ./packaging.mk
 
 DIRS = $(filter %/, $(wildcard */))
 
