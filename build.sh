@@ -18,64 +18,8 @@ NGX_GROUP="www-data"
 
 [[ ! -d $PWD/packages ]] && mkdir -p $PWD/packages
 
-# nginx dependencies
-# https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/
-# --------------------------------------------------------------------------------------------------------
-
-# Perl
-[[ ! -d $PWD/packages/perl-${PERL_VERSION} ]] || rm -fr $PWD/packages/perl-${PERL_VERSION}
-curl -fsSL http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
-# cd $PWD/packages/perl-${PERL_VERSION} && ./Configure -des -Dprefix=/usr -Dusethreads
-# make && make test && make install
-
-# PCRE
-[[ ! -d $PWD/packages/pcre-${PCRE_VERSION} ]] || rm -fr $PWD/packages/pcre-${PCRE_VERSION}
-curl -fsSL https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
-cd $PWD/packages/pcre-${PCRE_VERSION} && ./configure && make && make install
-
-# zlib
-[[ ! -d $PWD/packages/zlib-${ZLIB_VERSION} ]] || rm -fr $PWD/packages/zlib-${ZLIB_VERSION}
-curl -fsSL http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
-cd $PWD/packages/zlib-${ZLIB_VERSION} && ./configure && make && make install
-
-# OpenSSL
-[[ ! -d $PWD/packages/openssl-${OPENSSL_VERSION} ]] || rm -fr $PWD/packages/openssl-${OPENSSL_VERSION}
-curl -fsSL https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
-cd $PWD/packages/openssl-${OPENSSL_VERSION} && ./Configure linux-x86_64 --prefix=/usr --openssldir=/usr/lib/ssl shared
-make && make install && echo '/usr/lib' > /etc/ld.so.conf.d/openssl.conf && sudo ldconfig
-openssl version -a
-
 # nginx additional modules
 # --------------------------------------------------------------------------------------------------------
-
-# libmaxminddb
-[[ ! -d $PWD/packages/libmaxminddb-${MAXMIND_VERSION} ]] || rm -fr $PWD/packages/libmaxminddb-${MAXMIND_VERSION}
-curl -fsSL https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz | tar -zxvf- -C $PWD/packages
-cd $PWD/packages/libmaxminddb-${MAXMIND_VERSION} && ./configure && make && make check && make install && ldconfig
-
-# Brotli
-[[ ! -d $PWD/packages/ngx_brotli ]] || rm -fr $PWD/packages/ngx_brotli
-git clone https://github.com/google/ngx_brotli.git $PWD/packages/ngx_brotli
-cd $PWD/packages/ngx_brotli && git submodule update --init
-
-# FancyIndex
-[[ ! -d $PWD/packages/ngx-fancyindex-${NGX_FANCYINDEX} ]] || rm -fr $PWD/packages/ngx-fancyindex-${NGX_FANCYINDEX}
-curl -fsSL https://github.com/aperezdc/ngx-fancyindex/archive/v{$NGX_FANCYINDEX}.tar.gz | tar -zxvf- -C $PWD/packages
-
-# Nginx RTMP
-# ngx_rtmp_release=$(curl -s "https://api.github.com/repos/sergey-dryabzhinsky/nginx-rtmp-module/tags" | jq -r '.[0].name')
-# ngx_rtmp_version=$(echo ${ngx_rtmp_release} | cut -d 'v' -f 2)
-# curl -fsSL https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/${ngx_rtmp_release}.tar.gz | tar -zxvf- -C $PWD/packages
-
-# PageSpeed
-MODPAGESPEED_RELEASE=$(curl -s "https://api.github.com/repos/apache/incubator-pagespeed-ngx/tags" | jq -r '.[0].name')
-MODPAGESPEED_VERSION=$(echo ${MODPAGESPEED_RELEASE} | cut -d 'v' -f 2)
-PSOL_RELEASE_NUMBER=${MODPAGESPEED_VERSION/stable/}
-
-[[ ! -d $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION} ]] || rm -fr $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
-curl -fsSL https://github.com/apache/incubator-pagespeed-ngx/archive/${MODPAGESPEED_RELEASE}.tar.gz | tar -zxvf- -C $PWD/packages
-cd $PWD/packages/incubator-pagespeed-ngx-${MODPAGESPEED_VERSION}
-curl -fsSL https://dl.google.com/dl/page-speed/psol/${PSOL_RELEASE_NUMBER}x$(uname -p | cut -d '_' -f 2).tar.gz | tar -zxvf-
 
 # Download nginx source
 # --------------------------------------------------------------------------------------------------------
