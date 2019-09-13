@@ -1,18 +1,17 @@
 # Available make command
 # ------------------------------------------------------------------------------
-COMMANDS = distro source-build build install dput clean
+COMMANDS = distro compile install-source build build-source install dput clean
 
 # PPA archive
 # ------------------------------------------------------------------------------
-PPA_NAME=ppa:riipandi/nginx
+PPA_NAME=ppa:riipandi/experimental
+
+DEBEMAIL="ar.is@outlook.com"
+DEBFULLNAME="Aris Ripandi"
 
 # List of target distributions
 # ------------------------------------------------------------------------------
 DISTROS = xenial bionic
-
-# Debuild command
-# ------------------------------------------------------------------------------
-DEBUILD=debuild -S
 
 # Packages version
 # ------------------------------------------------------------------------------

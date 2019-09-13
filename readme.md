@@ -27,3 +27,7 @@ This branch follows latest NGINX Mainline packages compiled against latest OpenS
 BUGS & FEATURES: <https://gitlab.com/riipandi/ppa-nginx/issues>
 
 > If you like my work, you can give me a little motivation by donating via: <https://paypal.me/riipandi>
+
+### References
+
+- https://github.com/named-data/ppa-packaging

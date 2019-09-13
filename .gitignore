@@ -1,3 +1,4 @@
 **/pkgsrc/
+**/*.build
 /packages/
 /modules/
