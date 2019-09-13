@@ -1,3 +1,8 @@
+# Make command
+COMMANDS = distro source-build build install dput clean
+
+# Packages version
+
 PERL_VERSION="5.26.1"
 
 PCRE_VERSION="8.43"

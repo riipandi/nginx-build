@@ -1,0 +1,29 @@
+image: "ubuntu:bionic"
+
+# variables:
+#   VARIABLE_X: abc
+#   VARIABLE_Y: def
+
+stages:
+  - compile
+  # - publish
+
+compile:
+  stage: compile
+  before_script:
+    - apt update
+  #   - apt -y install sudo software-properties-common automake build-essential
+  # script:
+  #   - sudo make dep
+  #   - sudo ./build.sh
+  # after_script:
+  #   - echo && nginx -v && nginx -V
+  #   - echo "todo = publish to PPA repo"
+  # artifacts:
+  #   paths:
+  #     - packages/
+
+# publish:
+#   stage: publish
+#   script:
+#     - echo "todo = publish to PPA repo"

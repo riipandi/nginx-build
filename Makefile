@@ -1,13 +1,10 @@
-DIRS = $(filter %/, $(wildcard */))
+include ./version.mk
 
-COMMANDS = distro source-build build dput clean
+DIRS = $(filter %/, $(wildcard */))
 
 all:
 	@echo "Available commands:"
-	@\
-for command in ${COMMANDS}; do  \
-echo "  $$command"; \
-done
+	@for command in ${COMMANDS}; do echo "  $$command"; done
 
 # dep:
 # 	@apt update && apt -y install sudo software-properties-common
@@ -20,6 +17,3 @@ done
 
 $(COMMANDS): ${DIRS}
 	@for dir in ${DIRS}; do (cd $$dir && $(MAKE) $@) ; done
-
-clean-all: ${DIRS}
-	@for dir in ${DIRS}; do (cd $$dir && $(MAKE) clean) ; done

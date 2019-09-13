@@ -6,21 +6,26 @@ PKG_NAME=nginx
 # PPA version
 # PPA_VERSION=1
 
-all: source-build build install
+all:
+	@echo "Available commands:"
+	@for command in ${COMMANDS}; do echo "  $$command"; done
+
+distro:
+	@echo "task distro"
 
 source-build:
-	@echo 'task: source-build'
 	@echo "current nginx version: ${NGX_VERSION}"
 	@if [ ! -d pkgsrc ]; then mkdir -p pkgsrc ; fi
 	@if [ -d pkgsrc/nginx-${NGX_VERSION} ]; then rm -fr pkgsrc/nginx-${NGX_VERSION} ; fi
 
 build:
-	@echo 'task: build'
+	@echo "task build"
 
-install: build
-	@echo 'task: install'
-	@# sudo dpkg -i work/*.deb
+install:
+	@echo "task install"
+
+dput:
+	@echo "task dput"
 
 clean:
-	@echo 'Clean working dir..'
 	@rm -fr pkgsrc
