@@ -173,10 +173,13 @@ Create logrotation config for NGINX: `sudo nano /etc/logrotate.d/nginx`
         fi
     endscript
 }
+
+<!--
 ```
 ### Rebranding
 
 ```sh
+cd ~/hatta/sources/nginx
 find . -type f -exec rename -f 's/ngx/htt/' * {} \;
 find . -type f -exec rename -f 's/nginx/hatta/' * {} \;
 find . -type d -exec rename -f 's/nginx/hatta/' * {} \;
@@ -186,6 +189,7 @@ find . -type f -exec sed -i 's/nginx/hatta/g' {} \;
 find . -type f -exec sed -i 's/ngx/htt/g' {} \;
 find . -type f -exec sed -i 's/hatta.org/hatta.github.io/g' {} \;
 ```
+-->
 
 ## About
 
