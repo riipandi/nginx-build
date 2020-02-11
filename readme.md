@@ -155,7 +155,7 @@ sudo systemctl status nginx
 netstat -pltn | grep 80
 ```
 
-Create logrotation config for NGINX: `sudo vim /etc/logrotate.d/nginx`
+Create logrotation config for NGINX: `sudo nano /etc/logrotate.d/nginx`
 
 ```
 /var/log/nginx/*.log {
