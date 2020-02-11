@@ -13,8 +13,8 @@ MAXMIND_VERSION=$(echo `curl -s "https://api.github.com/repos/maxmind/libmaxmind
 
 NGX_VERSION=$(echo `curl -s "https://api.github.com/repos/nginx/nginx/tags" | jq -r '.[0].name'` | cut -d '-' -f 2)
 NGX_FANCYINDEX="0.4.3"
-NGX_USER="www-data"
-NGX_GROUP="www-data"
+NGX_USER="webmaster"
+NGX_GROUP="webmaster"
 
 [[ ! -d $PWD/packages ]] && mkdir -p $PWD/packages
 
@@ -39,7 +39,7 @@ cd $PWD/packages/nginx-${NGX_VERSION}
 # ==========================================================================================
 # sed -i "s/\"Server: nginx\"/\"Server: servant\"/" src/http/ngx_http_header_filter_module.c
 # sed -i "s/\"nginx\/\"/\"servant\/\"/" src/core/nginx.h
-# sed -i "s/nobody/www-data/" conf/nginx.conf
+# sed -i "s/nobody/webmaster/" conf/nginx.conf
 # sed -i "s/#user/user/" conf/nginx.conf
 # curl -sL https://git.io/Jemb4 -o html/index.html
 # curl -sL https://git.io/JembB -o html/404.html

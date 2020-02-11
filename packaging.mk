@@ -31,5 +31,5 @@ NGX_FANCYINDEX=$(shell echo `curl -s "https://api.github.com/repos/aperezdc/ngx-
 
 # Nginx user and group name
 # ------------------------------------------------------------------------------
-NGX_USER="www-data"
-NGX_GROUP="www-data"
+NGX_USER="webmaster"
+NGX_GROUP="webmaster"
