@@ -139,7 +139,7 @@ cd ~/hatta/sources/nginx
     --with-openssl-opt=no-nextprotoneg \
     --add-module=../ngx_brotli \
     --add-module=../ngx_pagespeed \
-    --ad-module=../ngx_fancyindex \
+    --add-module=../ngx_fancyindex \
     --add-dynamic-module=../ngx_rtmp
     # --with-debug
 
