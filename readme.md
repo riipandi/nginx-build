@@ -67,6 +67,10 @@ curl -s ${psol_url} | tar xvz -C ~/hatta/sources/ngx_pagespeed
 
 # ngx_rtmp module
 git clone https://github.com/arut/nginx-rtmp-module ~/hatta/sources/ngx_rtmp
+
+# ngx_fancyindex
+curl -sL https://github.com/aperezdc/ngx-fancyindex/archive/v0.4.3.tar.gz | tar xvz -C ~/hatta/sources
+mv ~/hatta/sources/ngx-fancyindex-0.4.3 ~/hatta/sources/ngx_fancyindex
 ```
 
 ### Compile Nginx
@@ -136,6 +140,7 @@ cd ~/hatta/sources/nginx
     --with-openssl-opt=no-nextprotoneg \
     --add-module=../ngx_brotli \
     --add-module=../ngx_pagespeed \
+    --ad-module=../ngx_fancyindex \
     --add-dynamic-module=../ngx_rtmp
     # --with-debug
 
