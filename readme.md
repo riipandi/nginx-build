@@ -115,19 +115,21 @@ sudo ln -s /usr/lib/nginx/modules /etc/nginx/modules
 [[ $(cat /etc/passwd | grep -c webmaster) -eq 1 ]] || sudo useradd -u 5000 -s /usr/sbin/nologin -d /bin/null -g webmaster webmaster
 
 # Create NGINX directories and set proper permissions
-sudo mkdir -p /var/log/nginx /var/run/nginx /etc/nginx/{conf.d,server.d,vhost.d}
+sudo mkdir -p /var/log/nginx /var/run/nginx /etc/nginx/{conf.d,server.d,vhost.d} /var/www
 sudo mkdir -p /var/cache/nginx/{client_temp,fastcgi_temp,proxy_temp,scgi_temp,uwsgi_temp}
 sudo chmod 700 /var/cache/nginx/* && sudo chown webmaster:root /var/cache/nginx/*
 sudo chmod 640 /var/log/nginx/* && sudo chown webmaster:root /var/log/nginx/*
 sudo chmod 700 /var/run/nginx/* && sudo chown webmaster:root /var/run/nginx/*
-sudo rm -fr /etc/nginx/{html,*.default}
+sudo cp -R /etc/nginx/html /var/www && sudo rm -fr /etc/nginx/{html,*.default}
+sudo chmod 775 /var/www/html && sudo chown webmaster:webmaster /var/www/html
+sudo sed -i "s/html;/\/var\/www\/html;/" /etc/nginx/nginx.conf
 sudo nginx -t
 ```
 
 ### Systemd unit file
 
 ```sh
-sudo tee -a /etc/systemd/system/nginx.service >/dev/null <<'EOF'
+sudo tee /etc/systemd/system/nginx.service >/dev/null <<'EOF'
 [Unit]
 Description=nginx - high performance web server
 Documentation=https://nginx.org/en/docs/
@@ -159,7 +161,7 @@ netstat -pltn | grep 80
 ### Create logrotation config for NGINX
 
 ```sh
-sudo tee -a /etc/logrotate.d/nginx >/dev/null <<'EOF'
+sudo tee /etc/logrotate.d/nginx >/dev/null <<'EOF'
 /var/log/nginx/*.log {
     daily
     missingok
