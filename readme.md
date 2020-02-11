@@ -19,7 +19,8 @@ gnupg debconf-utils gcc make cmake pv  binutils dnsutils bsdtar lsof curl tar zi
 git jq rename mmv dpkg-dev build-essential dh-systemd diffstat quilt tree perl autoconf \
 checkinstall ca-certificates zlib1g zlib1g-dev libpcre3 libpcre3-dev libperl-dev libgd3 \
 libgd-dev libssl-dev automake libtool uuid-dev lsb-release libxml2 libxml2-dev libgeoip1 \
-libgeoip-dev libxslt1.1 libxslt1-dev geoip-bin xutils-dev libtemplate-perl libatomic-ops-dev
+libgeoip-dev libxslt1.1 libxslt1-dev geoip-bin xutils-dev libtemplate-perl \
+libatomic-ops-dev devscripts debhelper dh-make
 ```
 
 ### Get the sources
@@ -41,8 +42,8 @@ curl -s https://www.zlib.net/zlib-1.2.11.tar.gz | tar xvz -C ~/hatta/sources
 mv ~/hatta/sources/zlib-1.2.11 ~/hatta/sources/zlib
 
 # OpenSSL source
-curl -s https://www.openssl.org/source/openssl-1.1.1d.tar.gz | tar xvz -C ~/hatta/sources
-mv ~/hatta/sources/openssl-1.1.1d ~/hatta/sources/openssl
+curl -s https://www.openssl.org/source/openssl-1.1.1c.tar.gz | tar xvz -C ~/hatta/sources
+mv ~/hatta/sources/openssl-1.1.1c ~/hatta/sources/openssl
 
 # ngx_brotli module
 git clone https://github.com/google/ngx_brotli.git ~/hatta/sources/ngx_brotli
@@ -50,7 +51,7 @@ cd ~/hatta/sources/ngx_brotli && git submodule update --init
 
 # ngx_pagespeed module
 NPS_VERSION="1.13.35.2-stable"
-curl -fsSL https://github.com/apache/incubator-pagespeed-ng
+curl -fsSL https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}.zip | bsdtar -xvf- -C ~/hatta/sources
 mv ~/hatta/sources/incubator-pagespeed-ngx-${NPS_VERSION} ~/hatta/sources/ngx_pagespeed
 cd ~/hatta/sources/ngx_pagespeed
 NPS_RELEASE_NUMBER=${NPS_VERSION/beta/}
@@ -63,7 +64,7 @@ curl -s ${psol_url} | tar xvz -C ~/hatta/sources/ngx_pagespeed
 git clone https://github.com/arut/nginx-rtmp-module ~/hatta/sources/ngx_rtmp
 ```
 
-## Compile Nginx
+### Compile Nginx
 
 ```sh
 # Create NGINX system group and user
@@ -217,6 +218,23 @@ find . -type f -exec sed -i 's/ngx/htt/g' {} \;
 find . -type f -exec sed -i 's/hatta.org/hatta.github.io/g' {} \;
 ```
 -->
+
+### Compile OpenSSL
+
+```sh
+# Determine OpenSSL version
+openssl version -a ; openssl version -d
+
+# Configure and install
+cd ~/hatta/sources/openssl
+# ./config --prefix=/usr/lib/ssl --openssldir=/usr/lib/ssl shared zlib
+./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
+make && make test
+sudo make install
+
+echo '/usr/local/ssl/lib' | sudo tee /etc/ld.so.conf.d/openssl-1.1.1c.conf
+sudo ldconfig -v
+```
 
 ## About
 
