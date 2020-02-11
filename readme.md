@@ -138,6 +138,7 @@ Wants=network-online.target
 Type=forking
 PIDFile=/var/run/nginx/nginx.pid
 ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
+ExecStartPost=/bin/sleep 0.1
 ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
@@ -155,9 +156,10 @@ sudo systemctl status nginx
 netstat -pltn | grep 80
 ```
 
-Create logrotation config for NGINX: `sudo nano /etc/logrotate.d/nginx`
+### Create logrotation config for NGINX
 
-```
+```sh
+sudo tee -a /etc/logrotate.d/nginx >/dev/null <<'EOF'
 /var/log/nginx/*.log {
     daily
     missingok
@@ -165,14 +167,15 @@ Create logrotation config for NGINX: `sudo nano /etc/logrotate.d/nginx`
     compress
     delaycompress
     notifempty
-    create 640 nginx adm
+    create 640 webmaster webmaster
     sharedscripts
     postrotate
-        if [ -f /var/run/nginx.pid ]; then
-            kill -USR1 `cat /var/run/nginx.pid`
+        if [ -f /var/run/nginx/nginx.pid ]; then
+            kill -USR1 `cat /var/run/nginx/nginx.pid`
         fi
     endscript
 }
+EOF
 ```
 
 <!--
