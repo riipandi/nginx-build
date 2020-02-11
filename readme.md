@@ -43,11 +43,34 @@ mv ~/hatta/sources/zlib-1.2.11 ~/hatta/sources/zlib
 # OpenSSL source
 curl -s https://www.openssl.org/source/openssl-1.1.1d.tar.gz | tar xvz -C ~/hatta/sources
 mv ~/hatta/sources/openssl-1.1.1d ~/hatta/sources/openssl
+
+# ngx_brotli module
+git clone https://github.com/google/ngx_brotli.git ~/hatta/sources/ngx_brotli
+cd ~/hatta/sources/ngx_brotli && git submodule update --init
+
+# ngx_pagespeed module
+NPS_VERSION="1.13.35.2-stable"
+curl -fsSL https://github.com/apache/incubator-pagespeed-ng
+mv ~/hatta/sources/incubator-pagespeed-ngx-${NPS_VERSION} ~/hatta/sources/ngx_pagespeed
+cd ~/hatta/sources/ngx_pagespeed
+NPS_RELEASE_NUMBER=${NPS_VERSION/beta/}
+NPS_RELEASE_NUMBER=${NPS_VERSION/stable/}
+psol_url=https://dl.google.com/dl/page-speed/psol/${NPS_RELEASE_NUMBER}.tar.gz
+chmod +x scripts/format_binary_url.sh && psol_url=$(scripts/format_binary_url.sh PSOL_BINARY_URL)
+curl -s ${psol_url} | tar xvz -C ~/hatta/sources/ngx_pagespeed
+
+# ngx_rtmp module
+git clone https://github.com/arut/nginx-rtmp-module ~/hatta/sources/ngx_rtmp
 ```
 
 ## Compile Nginx
 
 ```sh
+# Create NGINX system group and user
+[[ $(cat /etc/group  | grep -c webmaster) -eq 1 ]] || sudo groupadd -g 5000 webmaster
+[[ $(cat /etc/passwd | grep -c webmaster) -eq 1 ]] || sudo useradd -u 5000 -s /usr/sbin/nologin -d /bin/null -g webmaster webmaster
+
+# Configure and install
 cd ~/hatta/sources/nginx
 ./configure --prefix=/etc/nginx \
     --sbin-path=/usr/sbin/nginx \
@@ -58,7 +81,7 @@ cd ~/hatta/sources/nginx
     --lock-path=/var/run/nginx/nginx.lock \
     --user=webmaster \
     --group=webmaster \
-    --build=Altaris \
+    --build=altarisdev \
     --builddir=output \
     --with-select_module \
     --with-poll_module \
@@ -70,7 +93,7 @@ cd ~/hatta/sources/nginx
     --with-http_addition_module \
     --with-http_xslt_module=dynamic \
     --with-http_image_filter_module=dynamic \
-    --with-http_geoip_module=dynamic \
+    --with-http_geoip_module \
     --with-http_sub_module \
     --with-http_dav_module \
     --with-http_flv_module \
@@ -105,14 +128,13 @@ cd ~/hatta/sources/nginx
     --with-zlib=../zlib \
     --with-openssl=../openssl \
     --with-openssl-opt=no-nextprotoneg \
-    --with-debug
+    --add-module=../ngx_brotli \
+    --add-module=../ngx_pagespeed \
+    --add-dynamic-module=../ngx_rtmp
+    # --with-debug
 
 make && sudo make install
-sudo ln -s /usr/lib/nginx/modules /etc/nginx/modules
-
-# Create NGINX system group and user
-[[ $(cat /etc/group  | grep -c webmaster) -eq 1 ]] || sudo groupadd -g 5000 webmaster
-[[ $(cat /etc/passwd | grep -c webmaster) -eq 1 ]] || sudo useradd -u 5000 -s /usr/sbin/nologin -d /bin/null -g webmaster webmaster
+sudo ln -fs /usr/lib/nginx/modules /etc/nginx/modules
 
 # Create NGINX directories and set proper permissions
 sudo mkdir -p /var/log/nginx /var/run/nginx /etc/nginx/{conf.d,server.d,vhost.d} /var/www
@@ -184,7 +206,7 @@ EOF
 ### Rebranding
 
 ```sh
-cd ~/hatta/sources/nginx
+cd ~/hatta/sources
 find . -type f -exec rename -f 's/ngx/htt/' * {} \;
 find . -type f -exec rename -f 's/nginx/hatta/' * {} \;
 find . -type d -exec rename -f 's/nginx/hatta/' * {} \;
