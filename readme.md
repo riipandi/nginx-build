@@ -19,8 +19,8 @@ gnupg debconf-utils gcc make cmake pv  binutils dnsutils bsdtar lsof curl tar zi
 git jq rename mmv dpkg-dev build-essential dh-systemd diffstat quilt tree perl autoconf \
 checkinstall ca-certificates zlib1g zlib1g-dev libpcre3 libpcre3-dev libperl-dev libgd3 \
 libgd-dev libssl-dev automake libtool uuid-dev lsb-release libxml2 libxml2-dev libgeoip1 \
-libgeoip-dev libxslt1.1 libxslt1-dev geoip-bin xutils-dev libtemplate-perl \
-libatomic-ops-dev devscripts debhelper dh-make
+libgeoip-dev libxslt1.1 libxslt1-dev libssl1.0-dev geoip-bin xutils-dev libtemplate-perl \
+libatomic-ops-dev devscripts debhelper dh-make libmaxminddb0 libmaxminddb-dev mmdb-bin
 ```
 
 ### Get the sources
@@ -44,6 +44,10 @@ mv ~/hatta/sources/zlib-1.2.11 ~/hatta/sources/zlib
 # OpenSSL source
 curl -s https://www.openssl.org/source/openssl-1.1.1c.tar.gz | tar xvz -C ~/hatta/sources
 mv ~/hatta/sources/openssl-1.1.1c ~/hatta/sources/openssl
+
+# libmaxminddb
+curl -sL https://github.com/maxmind/libmaxminddb/releases/download/1.4.2/libmaxminddb-1.4.2.tar.gz | tar xvz -C ~/hatta/sources
+mv ~/hatta/sources/libmaxminddb-1.4.2 ~/hatta/sources/libmaxminddb
 
 # ngx_brotli module
 git clone https://github.com/google/ngx_brotli.git ~/hatta/sources/ngx_brotli
@@ -226,14 +230,33 @@ find . -type f -exec sed -i 's/hatta.org/hatta.github.io/g' {} \;
 openssl version -a ; openssl version -d
 
 # Configure and install
+curl -L# 'http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C' -o levitte.txt
+curl -L# 'http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x8657ABB260F056B1E5190839D9C4D26D0E604491' -o caswell.txt
+gpg --import caswell.txt && gpg --import levitte.txt && gpg --list-keys
+for fpr in $(gpg --list-keys --with-colons | awk -F: '/fpr:/ {print $10}' | sort -u); do  echo -e "5\ny\n" |  gpg --command-fd 0 --expert --edit-key $fpr trust; done
+
 cd ~/hatta/sources/openssl
-# ./config --prefix=/usr/lib/ssl --openssldir=/usr/lib/ssl shared zlib
-./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
+# ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
+./config --prefix=/usr/lib --openssldir=/usr/lib/ssl shared zlib
 make && make test
 sudo make install
 
 echo '/usr/local/ssl/lib' | sudo tee /etc/ld.so.conf.d/openssl-1.1.1c.conf
 sudo ldconfig -v
+```
+
+### Compile libmaxminddb
+
+```sh
+cd ~/hatta/sources/libmaxminddb
+./configure
+make && make check
+sudo make install
+sudo ldconfig
+
+# If got error that libmaxminddb.so.0 is missing
+sudo sh -c "echo /usr/local/lib  >> /etc/ld.so.conf.d/local.conf"
+ldconfig
 ```
 
 ## About
