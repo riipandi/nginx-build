@@ -20,7 +20,8 @@ git jq rename mmv dpkg-dev build-essential dh-systemd diffstat quilt tree perl a
 checkinstall ca-certificates zlib1g zlib1g-dev libpcre3 libpcre3-dev libperl-dev libgd3 \
 libgd-dev libssl-dev automake libtool uuid-dev lsb-release libxml2 libxml2-dev libgeoip1 \
 libgeoip-dev libxslt1.1 libxslt1-dev libssl1.0-dev geoip-bin xutils-dev libtemplate-perl \
-libatomic-ops-dev devscripts debhelper dh-make libmaxminddb0 libmaxminddb-dev mmdb-bin
+libatomic-ops-dev libhiredis-dev libluajit-5.1-dev libmhash-dev libpam0g-dev libssl-dev \
+devscripts debhelper dh-make libmaxminddb0 libmaxminddb-dev mmdb-bin
 ```
 
 ### Get the sources
