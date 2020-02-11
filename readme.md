@@ -217,9 +217,12 @@ EOF
 
 ```sh
 cd ~/hatta/sources && mv nginx hatta
+find . -type f -exec sed -i 's/NGINX/HATTA/g' {} \;
 find . -type f -exec sed -i 's/Nginx/Hatta/g' {} \;
 find . -type f -exec sed -i 's/nginx/hatta/g' {} \;
 find . -type f -exec sed -i 's/ngx/htt/g' {} \;
+find . -type f -exec sed -i 's/NGX/HTT/g' {} \;
+
 find . -type f -exec sed -i 's/hatta.org/hatta.github.io/g' {} \;
 find . -depth -exec rename -v 's/nginx/hatta/g' {} +
 find . -depth -exec rename -v 's/ngx/htt/g' {} +
