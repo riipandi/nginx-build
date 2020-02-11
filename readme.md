@@ -173,9 +173,9 @@ Create logrotation config for NGINX: `sudo nano /etc/logrotate.d/nginx`
         fi
     endscript
 }
+```
 
 <!--
-```
 ### Rebranding
 
 ```sh
