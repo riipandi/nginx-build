@@ -15,13 +15,12 @@ sudo add-apt-repository -y ppa:maxmind/ppa && sudo apt -y upgrade
 sudo apt -y full-upgrade && sudo apt -y autoremove
 
 sudo apt -y install software-properties-common nano openssl crudini elinks pwgen dirmngr \
-gnupg debconf-utils gcc make cmake pv  binutils dnsutils bsdtar lsof curl tar zip unzip \
+gnupg debconf-utils gcc make cmake pv binutils dnsutils bsdtar lsof curl tar zip unzip \
 git jq rename mmv dpkg-dev build-essential dh-systemd diffstat quilt tree perl autoconf \
-checkinstall ca-certificates zlib1g zlib1g-dev libpcre3 libpcre3-dev libperl-dev libgd3 \
-libgd-dev libssl-dev automake libtool uuid-dev lsb-release libxml2 libxml2-dev libgeoip1 \
-libgeoip-dev libxslt1.1 libxslt1-dev libssl1.0-dev geoip-bin xutils-dev libtemplate-perl \
-libatomic-ops-dev libhiredis-dev libluajit-5.1-dev libmhash-dev libpam0g-dev libssl-dev \
-devscripts debhelper dh-make libmaxminddb0 libmaxminddb-dev mmdb-bin
+checkinstall ca-certificates mmdb-bin gnupg2 devscripts debhelper dh-make zlib1g zlib1g-dev \
+automake libtool uuid-dev lsb-release libpcre3 libpcre3-dev libperl-dev libgd3 libgd-dev \
+libssl-dev libxml2 libxml2-dev libgeoip1 libgeoip-dev libxslt1.1 libxslt1-dev geoip-bin \
+xutils-dev libtemplate-perl libatomic-ops-dev libmaxminddb0 libmaxminddb-dev
 ```
 
 ### Get the sources
